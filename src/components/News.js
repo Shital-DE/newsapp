@@ -9,13 +9,12 @@ const News = (props) => {
   const [loading, setLeading] = useState(true);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  // document.title = `News - ${this.capitalizaString(props.category)}`;
 
   const capitalizaString = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  const updatedNews = async (page) => {
+  const updatedNews = async () => {
     props.setProgress(0);
     const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=7200102f1f7440c48a9d8b88cacef6c7&pageSize=${props.pageSize}&page=${page}`;
     props.setProgress(25);
@@ -33,16 +32,9 @@ const News = (props) => {
   };
 
   useEffect(() => {
-    updatedNews(1);
+    document.title = `News - ${capitalizaString(props.category)}`;
+    updatedNews(); // eslint-disable-next-line
   }, []);
-
-  // handlePreviousClick = async () => {
-  //   this.updatedNews(this.state.page - 1 );
-  //  }
-
-  // handleNextClick = async () => {
-  //   this.updatedNews(this.state.page + 1);
-  // }
 
   const fetchMoreData = async () => {
     const url = `https://newsapi.org/v2/top-headlines?country=${
@@ -50,25 +42,18 @@ const News = (props) => {
     }&category=${props.category}&apiKey=${props.apiKey}&pageSize=${
       props.pageSize
     }&page=${page + 1}`;
-    this.setState({ loading: true });
+    setLeading(true);
     let data = await fetch(url);
     let parsedData = await data.json();
-    setArticles(parsedData.articles);
+    setArticles(articles.concat(parsedData.articles));
     setLeading(false);
-    setPage(page);
+    setPage(page + 1);
     setTotalResults(parsedData.totalResults);
-    // this.setState({
-    //   articles: this.state.articles.concat(parsedData.articles),
-    //   loading: false,
-    //   page: this.state.page + 1,
-    //   totalResults: parsedData.totalResults,
-    // });
   };
 
-  // render() {
   return (
     <div className="container my-3">
-      <h1 className="text-center" style={{ margin: "15px 0px" }}>
+      <h1 className="text-center" style={{ margin: "65px -10px 0" }}>
         Top {capitalizaString(props.category)} Headlines
       </h1>
       {loading && <Spinner />}
@@ -122,13 +107,8 @@ const News = (props) => {
           </div>
         </div>
       </InfiniteScroll>
-      {/* <div className="container d-flex justify-content-between">
-          <button disabled={this.state.page<=1} type="button" className="btn btn-dark" onClick={this.handlePreviousClick}>&larr; Revious</button>
-          <button disabled={(this.state.page > 1 && this.state.articles === undefined)? true :  this.state.page + 1 > Math.ceil(this.totalResults / props.pageSize)} type="button" className="btn btn-dark" onClick={this.handleNextClick} >Next &rarr;</button>
-        </div> */}
     </div>
   );
-  // }
 };
 
 News.defaultProps = {
